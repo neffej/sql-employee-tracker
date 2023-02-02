@@ -37,11 +37,6 @@ const addDepartment = [
         name: 'dept_name',
         message: "What department would you like to add?"
     },
-    {
-        type:'input',
-        name: 'dept_id',
-        message: "What id will this department have?"
-    }
 ];
 
 const addRole = [
@@ -49,11 +44,6 @@ const addRole = [
         type:'input',
         name: 'title',
         message: "What role would you like to add?"
-    },
-    {
-        type:'input',
-        name: 'role_id',
-        message: "What is the role's ID?"
     },
     {
         type:'input',
@@ -102,25 +92,28 @@ function initSwitch(response){
         db.query('SELECT * FROM department',   function(err, results){
             console.table(results);
         }); 
+        ask(initQuestions);
         break;
         case "View all roles": 
         db.query('SELECT * FROM role',   function(err, results){
             console.table(results);
         }); 
+        ask(initQuestions);
         break;
         case "View all employees": 
         db.query('SELECT * FROM employee',   function(err, results){
             console.table(results);
         }); 
+        ask(initQuestions);
         break;
         case "Add a department": 
-            askQuestions(addDepartment)
+            ask(addDepartment)
         break;
         case "Add a role": 
-            askQuestions(addRole)
+            ask(addRole)
         break;
         case "Add an employee": 
-            askQuestions(addEmployee)
+            ask(addEmployee)
         break;
         case "Update an employee role": 
         console.log("case 7");
@@ -129,46 +122,35 @@ function initSwitch(response){
             console.log("Something is up with the switch")
 }};
 
-function secondSwitch(response){
-    switch(response.name){
-        case 'dept_name':
-            console.log(response.name)
-        break
-        case 'dept_id':
-            console.log(response.name)
-        break
-        case 'title':
-            console.log(response.name)
-        break
-        case 'role_id':
-            console.log(response.name)
-        break
-        case 'salary':
-            console.log(response.name)
-        break
-        case 'first_name':
-            console.log(response.name)
-        break
-        case 'last_name':
-            console.log(response.name)
-        break
-        default:
-            console.log("Second switch done broke")
-    }
+function add_Department(response){
+    console.log('add dept', response)
+    ask(initQuestions)
 };
 
-function askQuestions(array) {
+function add_Role(response){
+    console.log('add role', response)
+    ask(initQuestions)
+};
+
+function add_Employee(response){
+    console.log('add employee', response)
+    ask(initQuestions)
+};
+
+// function updateEmployee();
+
+function ask(array) {
     inquirer.prompt(array)
     .then((response) => {
         console.log(response)
         if(array === initQuestions){
             initSwitch(response)}
-        else if(response.dept_id){
-            console.log('add dept', response)
-        }else if(response.role_id){
-            console.log('add role', response)
+        else if(response.dept_name){
+            add_Department(response)
+        }else if(response.title){
+            add_Role(response);
         }else{
-            console.log('add employee', response)
+            add_Employee(response);
         }
         return
     })
@@ -177,7 +159,7 @@ function askQuestions(array) {
 function init(){
     db;
 
-    askQuestions(initQuestions);
+    ask(initQuestions);
 };
 
 app.use((req, res) => {
