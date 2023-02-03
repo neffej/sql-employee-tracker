@@ -1,0 +1,1 @@
+SELECT department_id FROM role;

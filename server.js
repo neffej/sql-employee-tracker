@@ -3,6 +3,7 @@ const inquirer = require('inquirer');
 const express = require('express');
 const mysql = require ('mysql2');
 const cTable = require('console.table');
+const { title } = require('process');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -31,7 +32,9 @@ const initQuestions = [
     },
 ];
 
-const addDepartment = [
+let choices = [];
+
+const addDeptQs = [
     {
         type:'input',
         name: 'dept_name',
@@ -39,7 +42,7 @@ const addDepartment = [
     },
 ];
 
-const addRole = [
+const addRoleQs = [
     {
         type:'input',
         name: 'title',
@@ -50,15 +53,15 @@ const addRole = [
         name: 'salary',
         message: "How much does this role earn?"
     },
-    // {
-    //     type:'list',
-    //     name: 'department_id',
-    //     message: "What department ID should this role have?",
-    //     choices: function()
-    // }
+    {
+        type:'list',
+        name: 'department_id',
+        message: "What department ID should this role have?",
+        choices,
+    }
 ];
 
-const addEmployee = [
+const addEmplQs = [
     {
         type:'input',
         name: 'first_name',
@@ -89,9 +92,8 @@ const addEmployee = [
 function initSwitch(response){
     switch(response.intro){
         case "View all departments": 
-        db.query('SELECT * FROM department',   function(err, results){
-            console.table(results);
-        }); 
+        db.query('SELECT * FROM department',function(err, results){
+            console.table(results)});   
         ask(initQuestions);
         break;
         case "View all roles": 
@@ -107,13 +109,17 @@ function initSwitch(response){
         ask(initQuestions);
         break;
         case "Add a department": 
-            ask(addDepartment)
+            ask(addDeptQs)
         break;
         case "Add a role": 
-            ask(addRole)
+            const dept_id = db.query('SELECT DISTINCT id FROM department', function (err, results){
+                results.forEach(element => element.forEach(item => choices.push(item)))
+                }
+            )
+            ask(addRoleQs)
         break;
         case "Add an employee": 
-            ask(addEmployee)
+            ask(addEmplQs)
         break;
         case "Update an employee role": 
         console.log("case 7");
@@ -123,12 +129,15 @@ function initSwitch(response){
 }};
 
 function add_Department(response){
-    console.log('add dept', response)
+
+    db.query(`INSERT INTO role (title, salary, department_id) VALUES("${title}", "${salary}", "${department_id}");`)
     ask(initQuestions)
 };
 
 function add_Role(response){
-    console.log('add role', response)
+    const { title, salary, department_id } = response
+    db.query(`INSERT INTO role (title, salary, department_id) VALUES("${title}", "${salary}", "${department_id}");`)
+    let choices = [];
     ask(initQuestions)
 };
 
@@ -152,13 +161,12 @@ function ask(array) {
         }else{
             add_Employee(response);
         }
-        return
+        return;
     })
 };
 
 function init(){
     db;
-
     ask(initQuestions);
 };
 
