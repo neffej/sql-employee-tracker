@@ -196,7 +196,7 @@ function add_Employee(response){
 
 // function updateEmployee(); ran out of time, will finish someday!
 
-// Handler for inquirer.prompt feature; loads question arrays and organizes actions based on responses
+// Handler for inquirer.prompt feature; directs question arrays and organizes actions based on responses
 function ask(array) {
     inquirer.prompt(array)
     .then((response) => {
